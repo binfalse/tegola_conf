@@ -1,0 +1,50 @@
+
+tile_buffer = 64
+
+[webserver]
+port = ":9090"
+
+[[providers]]
+name = "test_postgis"
+type = "postgis"
+uri = "postgres://tegola:supersecret@localhost:5432/tegola?sslmode=prefer"
+srid = 3857
+
+[[providers.layers]]
+name = "landuse"
+geometry_fieldname = "geom"
+id_fieldname = "gid"
+srid = 4326
+tablename = "gis.zoning_base_3857"
+
+[[providers.layers]]
+name = "roads"
+geometry_fieldname = "geom"
+id_fieldname = "gid"
+fields = ["class", "name"]
+tablename = "gis.zoning_base_3857"
+
+[[providers.layers]]
+name = "rivers"
+sql = "SELECT gid, ST_AsBinary(geom) AS geom FROM gis.rivers WHERE geom && !BBOX!"
+
+[[maps]]
+name = "zoning"
+tile_buffer = 0
+
+[[maps.layers]]
+provider_layer = "test_postgis.landuse"
+min_zoom = 12
+max_zoom = 16
+
+[maps.layers.default_tags]
+class = "park"
+
+[[maps.layers]]
+provider_layer = "test_postgis.rivers"
+min_zoom = 10
+max_zoom = 18
+
+[cache]
+type = "file"
+basepath = "/tmp/tegola"

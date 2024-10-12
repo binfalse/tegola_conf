@@ -1,0 +1,12 @@
+[package]
+name = "tegola_conf"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+serde = { version = "1.0.210", features = ["derive"] }
+serde_repr = "0.1.19"
+toml = "0.8.19"
+
+[dev-dependencies]
+tempfile = "3.13.0"

@@ -1,0 +1,60 @@
+tile_buffer = 32
+
+[webserver]
+port = ":8080"
+hostname = "localhost"
+uri_prefix = "prefix"
+
+[[providers]]
+name = "meun"
+type = "mvt_postgis"
+uri = "postgres://${DB_USER}:${DB_PASSWORD}@${DB_HOST}:${DB_PORT}/${DB_NAME}?sslmode=${TEGOLA_POSTGIS_SSL}"
+srid = 4326
+
+[[providers.layers]]
+name = "sperrmuell"
+geometry_fieldname = "wkb_geometry"
+geometry_type = "Point"
+fields = ["id", "pickup", "has_pic"]
+sql = "SELECT * FROM meun.get_tile_data(!BBOX!, 'sperrmuell')"
+
+[[providers.layers]]
+name = "verschenkenkiste"
+geometry_fieldname = "wkb_geometry"
+geometry_type = "Point"
+id_fieldname = "id"
+fields = ["id", "pickup", "has_pic"]
+srid = 3857
+tablename = "tiledata"
+
+[[maps]]
+name = "meun"
+attribution = "meun.codeahoi.de"
+center = [12.1139, 54.0932, 11.0]
+
+[[maps.layers]]
+provider_layer = "meun.sperrmuell"
+name = "sperrmuell layer"
+min_zoom = 1
+max_zoom = 50
+dont_simplify = true
+
+[maps.layers.default_tags]
+class = "sperrmuell"
+
+[[maps.layers]]
+provider_layer = "meun.verschenkenkiste"
+name = "verschenkenkisten layer"
+min_zoom = 15
+max_zoom = 20
+dont_simplify = false
+
+[cache]
+max_zoom = 13
+type = "redis"
+network = "tcp"
+address = "127.0.0.1:6379"
+password = "secret"
+db = 3
+ssl = false
+
